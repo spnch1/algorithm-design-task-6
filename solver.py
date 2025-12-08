@@ -106,6 +106,7 @@ class ParameterTuner:
             cycle += 1
             if callback: callback(f"--- Cycle {cycle} ---\n")
             
+            keys = ['num_bees', 'num_sites', 'limit']
             for key in keys:
                 best_val_for_key = self.current_params[key]
                 best_cost_for_key = float('inf')
