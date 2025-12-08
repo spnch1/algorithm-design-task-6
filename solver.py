@@ -42,7 +42,7 @@ class BeeTSP:
             for i in range(self.num_sites):
                 p = population[i].copy()
                 a, b = random.sample(range(NUM_CITIES), 2)
-                p[a], p[b] = p[b], p[a] # Swap
+                p[a], p[b] = p[b], p[a]
                 c = calculate_cost(p)
                 if c < costs[i]:
                     population[i] = p
@@ -51,18 +51,27 @@ class BeeTSP:
                         self.best_cost = c
                         self.best_solution = p
 
-            sorted_idx = np.argsort(costs)
-            for i in range(self.num_sites // 2):
-                idx = sorted_idx[i]
-                p = population[idx].copy()
-                a, b = random.sample(range(NUM_CITIES), 2)
-                p[a], p[b] = p[b], p[a]
-                c = calculate_cost(p)
-                if c < costs[idx]:
-                    population[idx] = p
-                    costs[idx] = c
-                    if c < self.best_cost:
-                        self.best_cost = c
+            num_onlookers = self.num_bees - self.num_sites
+            
+            if num_onlookers > 0:
+                sorted_idx = np.argsort(costs)
+                
+                best_sites_indices = sorted_idx[:max(1, self.num_sites // 2)]
+                
+                for _ in range(num_onlookers):
+                    target_site_idx = random.choice(best_sites_indices)
+                    
+                    p = population[target_site_idx].copy()
+                    a, b = random.sample(range(NUM_CITIES), 2)
+                    p[a], p[b] = p[b], p[a]
+                    c = calculate_cost(p)
+                    
+                    if c < costs[target_site_idx]:
+                        population[target_site_idx] = p
+                        costs[target_site_idx] = c
+                        if c < self.best_cost:
+                            self.best_cost = c
+                            self.best_solution = p
             
             self.history.append(self.best_cost)
             
